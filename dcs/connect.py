@@ -19,9 +19,18 @@ class Connect:
     def dcsCommand(self, command, state):
 
         message = bytes("%s %s\n"%(command, state), 'utf-8')
-        message = ('%s %s\n'%(command, state)).encode()
-        print(message)
+        m sage = ('%s %s\n'%(command, state)).encode()
+        pint(message)
         self.sendUDP(message)
 
     def sendUDP(self, message):
         self.sock.sendto(message, (self.dcsIP, self.dcsPort))
+
+    #DCS-BIOS Pseudo C-code. base code:
+    # unsigned int value = (((uint16_t*)state)[start_address/2] & mask) >> shift
+    #changes in the data stream:
+    # <start address (16 bit)> <data length (16 bit)> data
+    # All integers value's are little endian
+    #
+    def decodeData(self, source):
+        pass

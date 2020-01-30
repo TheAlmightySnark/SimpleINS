@@ -13,6 +13,7 @@ import xplane.commands
 
 #dcs imports
 import dcs.connect
+import dcs.commands
 
 class SimpleINS:
     __board = None
@@ -79,5 +80,5 @@ class SimpleINS:
 
 #Launch application
 if __name__ == "__main__":
-    
+
     app = SimpleINS("/dev/ttyUSB0",[[10,8,9],])
