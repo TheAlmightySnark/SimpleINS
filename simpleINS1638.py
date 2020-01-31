@@ -4,8 +4,8 @@ import threading
 import time
 
 #display imports
-import sevensegchars
-import display
+import TM1638.sevensegchars as sevensegchars
+import TM1638.display as display
 
 #xplane imports
 import xplane.connect

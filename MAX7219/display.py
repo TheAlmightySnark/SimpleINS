@@ -33,6 +33,7 @@ class Display:
         self.__CS = board.get_pin(('d:%s:o'%CS))
         self.__DIN = board.get_pin(('d:%s:o'%DIN))
         self.__CLK = board.get_pin(('d:%s:o'%CLK))
+        self.__board = board
         self.__amount = amount
         self.characters = sevensegchars.Chars()
 

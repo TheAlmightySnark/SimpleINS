@@ -49,7 +49,7 @@ all_characters = {**numbers, **characters}
 class Chars:
 
     def __init__(self):
-        print('[sevensegchars.py] initiated')
+        print('[sevensegchars.py] MAX7219 initiated')
 
 
     #returns a blank character if the numer can't be found.
