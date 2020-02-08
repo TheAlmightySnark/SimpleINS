@@ -15,46 +15,67 @@ import xplane.commands
 import dcs.connect
 import dcs.commands
 
+keys = {
+    '00000000000000000000000000000000': 0, #no key
+    '00100000000000000000000000000000': 1, #1
+    '00000010000000000000000000000000': 2, #2
+    '00000000001000000000000000000000': 3, #3
+    '00000000000000100000000000000000': 4, #4
+    '00000000000000000010000000000000': 5, #5
+    '00000000000000000000001000000000': 6, #6
+    '00000000000000000000000000100000': 7, #7
+    '00000000000000000000000000000010': 8, #8
+    '01000000000000000000000000000000': 9, #9
+    '00000100000000000000000000000000': 10, #10
+    '00000000010000000000000000000000': 11, #11
+    '00000000000001000000000000000000': 12, #12
+    '00000000000000000100000000000000': 13, #13
+    '00000000000000000000010000000000': 14, #14
+    '00000000000000000000000001000000': 15, #15
+    '00000000000000000000000000000100': 16, #16
+}
+
 class SimpleINS:
     __board = None
-    __displays = []
+    __display = None
 
     connection = None
 
-    #keep track of what we are currently displaying on either screen
-    display_left = None
-    display_right = None
+    display_string = ''
+    __left = True
 
-    def __init__(self, arduino=None, displays=None):
+    def __init__(self, arduino=None, display_pins=[]):
         self.data = []
 
         if(arduino):
             self.__board = pyfirmata.Arduino(arduino)
 
-        if(displays):
-            for idx, dp in enumerate(displays):
-                new_display = display.Display(self.__board, dp[0], dp[1], dp[2], 2)
-                new_display.setId(idx+1)
-                self.__displays.append(new_display)
+        self.__display = display.Display(self.__board, display_pins[0], display_pins[1], display_pins[2])
 
-        print("[simpleINS.py] initiated with %s and displays %s"%(self.__board, self.__displays))
+        print("[simpleINS.py] initiated with %s and display %s"%(self.__board, self.__display))
 
-        for display_object in self.__displays:
-            display_object.showString('XPLANE ', display=1)
-            display_object.showString(' DCS   ', display=2)
-
-        #self.connection = xplane.connect.Connect('192.168.178.79', 49000)
-        self.connection = dcs.connect.Connect('192.168.178.79', 7778)
+        self.connection = xplane.connect.Connect('192.168.178.79', 49000)
+        # self.connection = dcs.connect.Connect('192.168.178.79', 7778)
         print(self.connection)
 
-        self.connection.dcsCommand('UFC_CLEAR', 1)
-        time.sleep(0.5)
-        self.connection.dcsCommand('UFC_CLEAR', 0)
-        #for dgram in xplane.commands.datarefs:
-        #    self.connection.xplaneDgram(dgram[0], xplane.commands.RREF, dgram[1], dgram[1])
+        # DCS command test
+        # self.connection.dcsCommand('UFC_CLEAR', 1)
+        # time.sleep(0.5)
+        # self.connection.dcsCommand('UFC_CLEAR', 0)
 
-        #threading.Thread(target=self.receiveXPUDP, args=()).start()
+        for dgram in xplane.commands.datarefs:
+            self.connection.xplaneDgram(dgram[0], xplane.commands.RREF, dgram[1], dgram[1])
+
+        threading.Thread(target=self.receiveXPUDP, args=()).start()
         print("active threads: ", threading.active_count)
+
+        # while True:
+            #self.__display.showString(str(time.time())[2:10])
+
+            # read = self.__display.readKeys()
+            # if read: self.__display.showString('BTN %s'%(read))
+
+            # time.sleep(1)
 
     #listens to the default XP10/11 UDP protocol, send to specified IP on port
     # 49000, X-plane accepts commands on 490001 IIRC.
@@ -66,11 +87,22 @@ class SimpleINS:
         for key, value in decoded.items():
             decoded_string += (chr(int(value)))
 
+        print(self.__left)
+        if self.__left: self.__display.showString(decoded_string[7:])
+        if not self.__left: self.__display.showString(decoded_string[:7])
 
-        self.__displays[0].showString(decoded_string[0:7], 2)
-        self.__displays[0].showString(decoded_string[7:], 1)
+        self.readKeys()
 
         threading.Thread(target=self.receiveXPUDP, args=()).start()
+
+    def readKeys(self):
+        read = self.__display.readKeys()
+        if not read: return
+
+        #if read == 1: self.__left = not self.__left
+
+        self.connection.xplaneCommand(xplane.commands.commandDict[read])
+
 
     #listens to the DCS-BIOS multicaster protocol by default on
     # IP/Port 239.255.50.10:5010
@@ -81,4 +113,4 @@ class SimpleINS:
 #Launch application
 if __name__ == "__main__":
 
-    app = SimpleINS("/dev/ttyUSB0",[[10,8,9],])
+    app = SimpleINS("/dev/ttyUSB0",[5,6,7])

@@ -23,7 +23,7 @@ class Connect:
     def xplaneCommand(self, dref, dtype=b"CMND\x00"):
         padstring = '<5s{0:d}s'.format(len(dref)) # puts the length of dref in the padstring as a integer
         datareference = dref.encode() #convert string to bytes.
-        message = struct.pack(padstring, dtype, dref) #pack according to the padstring arguments
+        message = struct.pack(padstring, dtype, datareference) #pack according to the padstring arguments
 
         self.sendUDP(message)
 

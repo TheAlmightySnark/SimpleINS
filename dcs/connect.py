@@ -19,8 +19,8 @@ class Connect:
     def dcsCommand(self, command, state):
 
         message = bytes("%s %s\n"%(command, state), 'utf-8')
-        m sage = ('%s %s\n'%(command, state)).encode()
-        pint(message)
+        # message = ('%s %s\n'%(command, state)).encode()
+        print(message)
         self.sendUDP(message)
 
     def sendUDP(self, message):

@@ -65,7 +65,14 @@ class Chars:
         if str(character) in all_characters:
             selected = all_characters[character]
 
-        if(decimal_point):
+        if(decimal_point): #TODO: could be done with a bitmask, might be faster
             selected = selected[:7] + '1'
 
         return selected
+
+    def stringToBin(self, string):
+        binary = []
+        for i in range(len(string)):
+            binary.append(self.getCharacter(string[i]))
+
+        return binary

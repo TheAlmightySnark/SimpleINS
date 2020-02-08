@@ -27,7 +27,6 @@ commandDict = {
     '8': 'cdu/8',
     '9': 'cdu/9',
     '0': 'cdu/0',
-    '0': 'cdu/0',
     '+': 'cdu/wayp_inc',
     '-': 'cdu/wayp_dec',
     'WPTCHG': 'cdu/wayp_change',
