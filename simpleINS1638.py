@@ -1,6 +1,7 @@
 #standard modules
 import pyfirmata
 import threading
+import queue
 import time
 
 #display imports
@@ -41,7 +42,7 @@ class SimpleINS:
 
     connection = None
 
-    display_string = ''
+    _display_string = ''
     __left = True
 
     def __init__(self, arduino=None, display_pins=[]):
@@ -67,7 +68,8 @@ class SimpleINS:
             self.connection.xplaneDgram(dgram[0], xplane.commands.RREF, dgram[1], dgram[1])
 
         threading.Thread(target=self.receiveXPUDP, args=()).start()
-        print("active threads: ", threading.active_count)
+        threading.Thread(target=self.readKeys, args=()).start()
+        # threading.Thread(target=self.readInput, args=()).start()
 
         # while True:
             #self.__display.showString(str(time.time())[2:10])
@@ -77,32 +79,45 @@ class SimpleINS:
 
             # time.sleep(1)
 
+    def readInput(self):
+        read = self.__display.readKeys()
+        if read: self.__display.showString('BTN %s'%(read))
+
+        threading.Thread(target=self.readInput, args=()).start()
+
+
     #listens to the default XP10/11 UDP protocol, send to specified IP on port
     # 49000, X-plane accepts commands on 490001 IIRC.
     def receiveXPUDP(self):
         data, adress = self.connection.sock.recvfrom(1024)
 
+
         decoded = self.connection.decodeData(data)
         decoded_string = ''
+
         for key, value in decoded.items():
             decoded_string += (chr(int(value)))
 
-        print(self.__left)
-        if self.__left: self.__display.showString(decoded_string[7:])
-        if not self.__left: self.__display.showString(decoded_string[:7])
-
-        self.readKeys()
+        if self.__left: self._display_string = decoded_string[7:]
+        if not self.__left: self._display_string = decoded_string[:7]
 
         threading.Thread(target=self.receiveXPUDP, args=()).start()
 
     def readKeys(self):
         read = self.__display.readKeys()
-        if not read: return
 
-        #if read == 1: self.__left = not self.__left
+        if read is not None: print(read)
 
-        self.connection.xplaneCommand(xplane.commands.commandDict[read])
+        if read == 1:
+            self.__left = not self.__left
 
+        if read in xplane.commands.commandDict.keys():
+            self.connection.xplaneCommand(xplane.commands.commandDict[read])
+
+        if self._display_string != self.__display.displayed():
+            self.__display.showString(self._display_string)
+
+        threading.Thread(target=self.readKeys, args=()).start()
 
     #listens to the DCS-BIOS multicaster protocol by default on
     # IP/Port 239.255.50.10:5010

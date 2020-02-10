@@ -48,6 +48,7 @@ class Display:
 
     characters = None
 
+
     def __init__(self, board, DIO, CLK, STB):
         self.__DIO = board.get_pin(('d:%s:o'%DIO))
         self.__CLK = board.get_pin(('d:%s:o'%CLK))
@@ -85,6 +86,7 @@ class Display:
 
     #use fixed adress mode(0x40) to set a full string from left to right.
     def showString(self, string):
+
         if string == self.__displayed: return
         #pad or limit string to 8 characters minimum.
         if len(string) < 8:
@@ -114,12 +116,12 @@ class Display:
 
         self.__displayed = string
 
+        #small pause after displaying something before going back to reading keys.
+        time.sleep(0.1)
+        
     #set a single digit to input char at position idx
     def setChar(self, char, idx):
         pass
-
-    def sendPacket(self, packet):
-        self.send(packet.packet)
 
     def sendCommand(self, data):
         self.__STB.write(self.LOW)
@@ -128,6 +130,7 @@ class Display:
 
     def sendHex(self, val):
         self.send(packet.Packet(val).packet)
+
     #clock data out, invert data order to clock our MSB first.
     def send(self, data):
         data = data[::-1]
@@ -141,6 +144,9 @@ class Display:
 
     def setId(self, id):
         self.__ID = id
+
+    def busy(self):
+        return self._busy
 
     def readKeys(self):
         read = ''
@@ -160,10 +166,11 @@ class Display:
 
         self.__DIO.mode = pyfirmata.OUTPUT
 
-        print("prevread[%s] read[%s]"%(hex(int(self.__prevread)), hex(int(read))))
+        # print("prevread[%s] read[%s]"%(hex(int(self.__prevread)), hex(int(read))))
 
         if read == self.__prevread:
-             return None
+            self.__prevread = read
+            return None
         else:
             self.__prevread = read
             return keys[read]
@@ -173,6 +180,9 @@ class Display:
         if(value > 0 and value < 8):
             self.sendCommand(0x8A + value)
         else: return
+
+    def displayed(self):
+        return self.__displayed
 
     #small animations, not really important but fun!
     def pulse(self, frequence):

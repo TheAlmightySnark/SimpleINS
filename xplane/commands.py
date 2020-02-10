@@ -17,7 +17,6 @@ CIVACharDict = {
 }
 
 commandDict = {
-    1: 'de/philippmuenzel/xciva/cdu/1',
     2: 'de/philippmuenzel/xciva/cdu/1',
     3: 'de/philippmuenzel/xciva/cdu/2',
     4: 'de/philippmuenzel/xciva/cdu/3',
@@ -28,14 +27,14 @@ commandDict = {
     11: 'de/philippmuenzel/xciva/cdu/8',
     12: 'de/philippmuenzel/xciva/cdu/9',
     15: 'de/philippmuenzel/xciva/cdu/0',
-    '+': 'de/philippmuenzel/xciva/cdu/wayp_inc',
+    5: 'de/philippmuenzel/xciva/cdu/wayp_inc',
     '-': 'de/philippmuenzel/xciva/cdu/wayp_dec',
     'WPTCHG': 'de/philippmuenzel/xciva/cdu/wayp_change',
-    16: 'de/philippmuenzel/xciva/cdu/insert',
-    14: 'de/philippmuenzel/xciva/cdu/clear',
+    14: 'de/philippmuenzel/xciva/cdu/insert',
+    16: 'de/philippmuenzel/xciva/cdu/clear',
     'REMOTE': 'de/philippmuenzel/xciva/cdu/remote',
-    '>': 'de/philippmuenzel/xciva/cdu/data_inc',
-    '<': 'de/philippmuenzel/xciva/cdu/data_dec',
+    9: 'de/philippmuenzel/xciva/cdu/data_inc',
+    13: 'de/philippmuenzel/xciva/cdu/data_dec',
     'modeinc': 'de/philippmuenzel/xciva/msu/mode_inc',
     'modedec': 'de/philippmuenzel/xciva/msu/mode_dec',
 }
