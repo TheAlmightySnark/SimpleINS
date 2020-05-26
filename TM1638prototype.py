@@ -27,7 +27,7 @@ def send(cmd):
         DIO.write(int(cmd[i]))
         CLK.write(HIGH)
 
-def blankDisplay():
+def blank():
     for i in range(16 * 8):
         CLK.write(LOW)
         DIO.write(LOW)

@@ -21,9 +21,9 @@ class Connect:
         message = bytes("%s %s\n"%(command, state), 'utf-8')
         # message = ('%s %s\n'%(command, state)).encode()
         print(message)
-        self.sendUDP(message)
+        self.send_UDP(message)
 
-    def sendUDP(self, message):
+    def send_UDP(self, message):
         self.sock.sendto(message, (self.dcsIP, self.dcsPort))
 
     #DCS-BIOS Pseudo C-code. base code:
@@ -32,5 +32,5 @@ class Connect:
     # <start address (16 bit)> <data length (16 bit)> data
     # All integers value's are little endian
     #
-    def decodeData(self, source):
+    def decode_data(self, source):
         pass

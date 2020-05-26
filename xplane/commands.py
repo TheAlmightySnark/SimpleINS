@@ -67,6 +67,6 @@ datarefs = [
 ]
 
 
-class Commands:
-    def __init(self):
+class Commands(Object):
+    def __init__(self):
         print('[Commands.py] initialized')

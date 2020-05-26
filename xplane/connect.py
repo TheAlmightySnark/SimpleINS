@@ -3,7 +3,7 @@ import socket
 import threading
 
 
-class Connect:
+class Connect(Object):
 
     #UDP connection variables
     sock = None
@@ -20,14 +20,14 @@ class Connect:
     #data references can be read out in the simulator itself or found onlineself.
     #TODO: dref example line here
     #TODO: fully formated dref here
-    def xplaneCommand(self, dref, dtype=b"CMND\x00"):
+    def xplane_cmd(self, dref, dtype=b"CMND\x00"):
         padstring = '<5s{0:d}s'.format(len(dref)) # puts the length of dref in the padstring as a integer
         datareference = dref.encode() #convert string to bytes.
         message = struct.pack(padstring, dtype, datareference) #pack according to the padstring arguments
 
-        self.sendUDP(message)
+        self.send_UDP(message)
 
-    def xplaneDgram(self, dataref, datatype, datarate, id):
+    def xplane_dgram(self, dataref, datatype, datarate, id):
         padstring = '<5sii400s' #padding to 413 bytes according to the struct packing page(python)
         datatype = b"RREF\x00" #5 byte data type including null terminator
         datarate = 1 #send data 10 times a second
@@ -37,10 +37,10 @@ class Connect:
         UDPMessage = struct.pack(padstring, datatype, datarate, id, datareference)
         #print(UDPMessage)
 
-        self.sendUDP(UDPMessage)
+        self.send_UDP(UDPMessage)
 
 
-    def sendUDP(self, message):
+    def send_UDP(self, message):
         self.sock.sendto(message, (self.xplaneIP, self.xplanePort))
 
     #X-plane returns a whole lot of data in each single packet. This can be more then a
@@ -48,7 +48,7 @@ class Connect:
     #this is done in 8 byte chunks, 4 byte int and a 4 byte floatself.
     #this is why we use the '<if' unpack.
     #Little endian, int for ID, and a float as value.
-    def decodeData(self, source):
+    def decode_data(self, source):
         #first 5 bytes tell us if it's X-plane data or not
         if source[0:5] != b'RREFO': return None
 

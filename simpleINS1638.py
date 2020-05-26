@@ -65,9 +65,9 @@ class SimpleINS:
         # self.connection.dcsCommand('UFC_CLEAR', 0)
 
         for dgram in xplane.commands.datarefs:
-            self.connection.xplaneDgram(dgram[0], xplane.commands.RREF, dgram[1], dgram[1])
+            self.connection.xplane_dgram(dgram[0], xplane.commands.RREF, dgram[1], dgram[1])
 
-        threading.Thread(target=self.receiveXPUDP, args=()).start()
+        threading.Thread(target=self.recv_XP_UDP, args=()).start()
         threading.Thread(target=self.readKeys, args=()).start()
         # threading.Thread(target=self.readInput, args=()).start()
 
@@ -88,11 +88,11 @@ class SimpleINS:
 
     #listens to the default XP10/11 UDP protocol, send to specified IP on port
     # 49000, X-plane accepts commands on 490001 IIRC.
-    def receiveXPUDP(self):
+    def recv_XP_UDP(self):
         data, adress = self.connection.sock.recvfrom(1024)
 
 
-        decoded = self.connection.decodeData(data)
+        decoded = self.connection.decode_data(data)
         decoded_string = ''
 
         for key, value in decoded.items():
@@ -101,7 +101,7 @@ class SimpleINS:
         if self.__left: self._display_string = decoded_string[7:]
         if not self.__left: self._display_string = decoded_string[:7]
 
-        threading.Thread(target=self.receiveXPUDP, args=()).start()
+        threading.Thread(target=self.recv_XP_UDP, args=()).start()
 
     def readKeys(self):
         read = self.__display.readKeys()
@@ -112,7 +112,7 @@ class SimpleINS:
             self.__left = not self.__left
 
         if read in xplane.commands.commandDict.keys():
-            self.connection.xplaneCommand(xplane.commands.commandDict[read])
+            self.connection.xplane_cmd(xplane.commands.commandDict[read])
 
         if self._display_string != self.__display.displayed():
             self.__display.showString(self._display_string)

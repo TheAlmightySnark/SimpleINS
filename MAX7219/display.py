@@ -14,7 +14,7 @@ startup_sequence = {
 10: '00000011', #display intensity, set to 7/32
 }
 
-class Display:
+class Display(Object):
     __CS = None
     __DIN = None
     __CLK = None
@@ -37,29 +37,29 @@ class Display:
         self.__amount = amount
         self.characters = sevensegchars.Chars()
 
-        self.initializeDisplay()
+        self.initialize()
 
         print('[display.py] initiated with %s'%board)
 
     #sends the series of startup commands found in startup_sequence to the display
-    def initializeDisplay(self):
+    def initialize(self):
 
         for key, value in startup_sequence.items():
-            self.sendPacket(packet.Packet(key, value), 1)
-            self.sendPacket(packet.Packet(key, value), 2)
+            self.send_packet(packet.Packet(key, value), 1)
+            self.send_packet(packet.Packet(key, value), 2)
 
-        self.blankDisplay(2)
-        self.blankDisplay(1)
+        self.blank(2)
+        self.blank(1)
         self.__ready = True
 
 
     #clears digit 0 through 7, writes a blank character to the MAX7219
-    def blankDisplay(self, display=1):
+    def blank(self, display=1):
         for i in range(8):
-            self.sendPacket(packet.Packet(i+1, self.characters.getCharacter(' ')), display)
+            self.send_packet(packet.Packet(i+1, self.characters.getCharacter(' ')), display)
 
 
-    def showString(self, string, display=1):
+    def show_string(self, string, display=1):
         string = string[::-1]
         decimalIdx = None
         for i in range(len(string)):
@@ -72,7 +72,7 @@ class Display:
             decimal = False
             if i == decimalIdx: decimal = True
             #print("sending %s to digit %s at dsp %s"%(string[i], i+1, display))
-            self.sendPacket(packet.Packet(i+1, self.characters.getCharacter(string[i], decimal)), display)
+            self.send_packet(packet.Packet(i+1, self.characters.getCharacter(string[i], decimal)), display)
 
     #sends a packet to the display by pulling ports low and HIGH
     #Chip Select(CS) goes low to allow wringin on Digital In(DIN)
@@ -81,7 +81,7 @@ class Display:
     #of the CLK pin. So when we set CLK to high DIN is read
     #when we've sent 16 bit we pull CS to high, this will set all
     #the internal registers on the MAX7219
-    def sendPacket(self, packet, display=1):
+    def send_packet(self, packet, display=1):
         if display == 1: #left-pad with 16 NO-OP/zero bits.
             packet.zfill(32) #add 16 empty bits.
         if display == 2: #right pad with 16 NO-OP/zero bits.
@@ -97,14 +97,14 @@ class Display:
     def ready(self):
         return self.__ready
 
-    def setId(self, id):
+    def set_ID(self, id):
         self.__ID = id
 
     #sets the brightness of the display, value range is 0 through 15.
     def brightness(self, value=0, display=1):
         if value not in range(0, 16):
             value = 0
-        self.sendPacket(packet.Packet(10, str(bin(value))[2:].zfill(8)), display)
+        self.send_packet(packet.Packet(10, str(bin(value))[2:].zfill(8)), display)
 
 
     #small animations, not really important but fun!

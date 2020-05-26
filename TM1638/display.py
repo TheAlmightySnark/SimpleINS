@@ -61,18 +61,18 @@ class Display:
 
         self.characters = sevensegchars.Chars()
 
-        self.initializeDisplay()
+        self.initialize()
 
         print('[display.py] initiated with %s'%board)
 
     #sends the series of startup commands found in startup_sequence to the display
-    def initializeDisplay(self):
+    def initialize(self):
         self.sendCommand(0x8F) #turn on display, maximum brightness
         self.__CLK.write(self.HIGH)
         self.__DIO.write(self.LOW)
         self.__STB.write(self.HIGH)
 
-        self.blankDisplay()
+        self.blank()
 
         #update the board without overflowing the serial connection.
         thread =  util.Iterator(self.__board)
@@ -81,7 +81,7 @@ class Display:
         self.__ready = True
 
     #clear the display of the TM1638 using fixed adress mode. loop through the 16 adresses
-    def blankDisplay(self):
+    def blank(self):
         self.showString('        ')
 
     #use fixed adress mode(0x40) to set a full string from left to right.
@@ -142,7 +142,7 @@ class Display:
     def ready(self):
         return self.__ready
 
-    def setId(self, id):
+    def set_ID(self, id):
         self.__ID = id
 
     def busy(self):
